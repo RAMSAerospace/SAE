@@ -17,17 +17,18 @@ Servo Aileron, Elevator, Motor, Rudder;
 Adafruit_GPS GPS(&GPSSerial);
 
 float latitud, longitud, latitudDegs, longitudDegs;
+int controlFlag=0;
 
 void setup(){
-    Serial.begin(9600);
-    Serial.println("Init ELRS");
-    Receiver.begin(200000);
-    Aileron.attach(29);
-    Elevator.attach(28);
-    Motor.attach(27);
-    Rudder.attach(26);
-    pinMode(6,OUTPUT_12MA);
-    pinMode(7,OUTPUT_12MA);
+  Serial.begin(9600);
+  Serial.println("Init ELRS");
+  Receiver.begin(200000);
+  Aileron.attach(29);
+  Elevator.attach(28);
+  Motor.attach(27);
+  Rudder.attach(26);
+  pinMode(6,OUTPUT_12MA);
+  pinMode(7,OUTPUT_12MA);
 }
 
 void setup1(){
@@ -41,11 +42,12 @@ void setup1(){
 }
 
 void loop(){
-   control();
+  control();
 }
 
 void loop1(){
   gps();
+  telemetry();
 }
 
 void control(){
@@ -77,19 +79,19 @@ void control(){
     digitalWrite(7,HIGH);
   }
   if (ELRSECHO){
-  Serial.print(crsf.getChannel(1));
-  Serial.print(" ");
-  Serial.print(crsf.getChannel(2));
-  Serial.print(" ");
-  Serial.print(crsf.getChannel(3));
-  Serial.print(" ");
-  Serial.print(crsf.getChannel(4));
-  Serial.print(" ");
-  Serial.print(crsf.getChannel(5));
-  Serial.print(" ");
-  Serial.print(crsf.getChannel(6));
-  Serial.print(" ");
-  Serial.println(crsf.getChannel(7));
+    Serial.print(crsf.getChannel(1));
+    Serial.print(" ");
+    Serial.print(crsf.getChannel(2));
+    Serial.print(" ");
+    Serial.print(crsf.getChannel(3));
+    Serial.print(" ");
+    Serial.print(crsf.getChannel(4));
+    Serial.print(" ");
+    Serial.print(crsf.getChannel(5));
+    Serial.print(" ");
+    Serial.print(crsf.getChannel(6));
+    Serial.print(" ");
+    Serial.println(crsf.getChannel(7));
   }
 }
 
@@ -103,7 +105,7 @@ void gps(){
       return;
   }
 
-  if (millis() - timer2 > 1000) {
+  if (millis() - timer1 > 1000) {
     timer1 = millis();
     Serial.println("");
     Serial.print("Fix: "); Serial.print((int)GPS.fix);
@@ -122,7 +124,6 @@ void gps(){
       Serial.print("Speed (knots): "); Serial.println(GPS.speed);
       Serial.print("Angle: "); Serial.println(GPS.angle);
       Serial.print("Altitude: "); Serial.println(GPS.altitude);
-      distObj = objetivo(latitudDegs, longitudDegs, latObj, lonObj);
       Serial.println(""); 
     }
   }
@@ -139,4 +140,13 @@ void convCords(){
  float nexttwoLon = lon - (float)(firsttwoLon*100);
  latitudDegs=(float)(firsttwoLat + nexttwoLat/60.0);
  longitudDegs=-(float)(firsttwoLon + nexttwoLon/60.0);
+}
+
+void telemetry(){
+  if(controlFlag>1900){
+    LED.clear();
+    LED.setPixelColor(0, LED.Color(0, 50, 0));
+    LED.show();
+  }
+  Serial2.println("Testing");
 }
