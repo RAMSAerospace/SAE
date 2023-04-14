@@ -1,6 +1,5 @@
 #include <CrsfSerial.h>
 #include <Servo.h>
-#include <Adafruit_NeoPixel.h>
 #include <Adafruit_GPS.h>
 #include <Wire.h>
 
@@ -10,7 +9,6 @@
 
 uint32_t timer1 = millis();
 
-Adafruit_NeoPixel LED(1, 16, NEO_GRB + NEO_KHZ800);
 SerialPIO Receiver(10, 11);
 CrsfSerial crsf(Receiver, 200000);
 Servo Aileron, Elevator, Motor, Rudder;
@@ -34,11 +32,6 @@ void setup(){
 void setup1(){
   Serial.println("Init GPS");
   GPS.begin(9600);
-  
-  LED.begin();
-  LED.clear();
-  LED.setPixelColor(0, LED.Color(0, 0, 50));
-  LED.show();
 }
 
 void loop(){
@@ -64,7 +57,7 @@ void control(){
     Elevator.writeMicroseconds(1500);
     Motor.writeMicroseconds(1000);
     Rudder.writeMicroseconds(1500);
-    //Serial.println("ELRS Inactive");
+    Serial.println("ELRS Inactive");
   }
   if (crsf.getChannel(5)>1500){
     digitalWrite(6,LOW);
@@ -143,10 +136,5 @@ void convCords(){
 }
 
 void telemetry(){
-  if(controlFlag>1900){
-    LED.clear();
-    LED.setPixelColor(0, LED.Color(0, 50, 0));
-    LED.show();
-  }
   Serial2.println("Testing");
 }
